@@ -3,6 +3,8 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import status, permissions
+from rest_framework.decorators import action
+
 
 from api import models as api_models
 from api import serializers as api_serializers
@@ -126,4 +128,81 @@ class BlogPostViewSet(ModelViewSet):
     #     instance.delete()
 
     #     return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=["get"], detail=True)
+    def drafts(self, request, pk=None):
+
+        try:
+            blog = self.get_object()
+        except Exception as e:
+            return Response(
+                data=u_responses.user_error_response(message="Unable to retrieve blog post"),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        if request.user != blog.author:
+            return Response(
+                data=u_responses.user_error_response(message="This feature is only available to blog authors"),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        drafts = blog.get_drafts()
+
+        return Response(
+            data={
+                "status": "SUCCESS",
+                "message": "success",
+                "data": drafts
+            }
+        )
+    
+    @action(methods=["post"], detail=True)
+    def publish_draft(self, request, pk=None):
+        
+
+        try:
+            serializer = api_serializers.PublishBlogPostSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            return Response(
+                data=u_responses.user_error_response(message=xuser_utils.handle_serializer_errors(serializer_error=serializer.errors)),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            blog = self.get_object()
+        except Exception as e:
+            return Response(
+                data=u_responses.user_error_response(message="Unable to retrieve blog post"),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        is_published, published_draft = serializer.publish(validated_data=serializer.validated_data, blog=blog, user=request.user)
+        if not is_published:
+
+
+            return Response(
+                data={
+                    "status": "FAILED",
+                    "message": published_draft
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        return Response(
+            data={
+                "status": "SUCCESS",
+                "message": "success",
+                "data": published_draft
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+        
+
+
+
+
+
+
+        
     
