@@ -133,7 +133,6 @@ def decode_jwt(jwt_token) -> dict:
         else:
             return True, (payload, auth_token.first().user)
     except Exception as e:
-        print(e)
         return False, xauth_exceptions.InvalidJwtToken
 
 

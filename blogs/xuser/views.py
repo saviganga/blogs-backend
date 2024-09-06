@@ -178,7 +178,6 @@ class AdminUserViewSet(ModelViewSet):
             req = self.write_serializer_class(data=request.data)
             req.is_valid(raise_exception=True)
         except Exception as e:
-            print(e)
             return Response(
                 data=u_responses.user_error_response(message=xuser_utils.handle_serializer_errors(serializer_error=req.errors)),
                 status=status.HTTP_400_BAD_REQUEST,

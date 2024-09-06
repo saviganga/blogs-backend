@@ -35,21 +35,6 @@ class JWTAuth(APIView):
         if user.check_password(serialized_data.validated_data.get("password")):
 
             jwt_token = xauth_utils.create_jwt_token(user=user, platform=platform, entity=entity)
-
-            # token_filter = {"user":f"{user.id}", "platform":f"{platform}"}
-            # user_tokens = xauth_models.AuthToken.objects.filter(**token_filter)
-            # if len(user_tokens) == 0:
-            #     jwt_token = xauth_utils.encode_jwt(user, platform=platform)          
-            # else:
-            #     curr_token = user_tokens[0]
-            #     if curr_token.expiry_date >= timezone.now():
-            #         curr_token.expiry_date =  timezone.now() + datetime.timedelta(hours=72)
-            #         curr_token.save()
-            #         jwt_token = xauth_utils.regenerate_jwt(user=user, hours=72, platform=platform, token=curr_token.token)
-
-            #     if curr_token.expiry_date < timezone.now():
-            #         curr_token.delete()
-            #         jwt_token = xauth_utils.encode_jwt(user, platform=platform)
             user.last_login = timezone.now()
             user.save()
             return Response(
