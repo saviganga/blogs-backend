@@ -87,6 +87,7 @@ class BlogPostViewSet(ModelViewSet):
                     status=status.HTTP_200_OK,
                 )
         except Exception as e:
+            print(e)
             return Response(
                 data=u_responses.user_error_response(message="Unable to fetch blog posts"),
                 status=status.HTTP_400_BAD_REQUEST,
