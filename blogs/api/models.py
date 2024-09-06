@@ -20,3 +20,8 @@ class BlogPost(models.Model):
 
     def __str__(self):
         return f"{self.title}. - by {self.author}"
+    
+    def get_drafts(self):
+
+        drafts = self.drafts
+        return drafts

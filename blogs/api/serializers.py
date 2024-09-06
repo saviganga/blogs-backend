@@ -50,3 +50,34 @@ class ReadBlogPostSerializer(serializers.ModelSerializer):
         model = api_models.BlogPost
         fields = "__all__"
 
+
+class PublishBlogPostSerializer(serializers.Serializer):
+
+    reference = serializers.CharField()
+
+    def publish(self, validated_data, blog, user):
+
+        try:
+            valid_user = xuser_models.AdminUser.objects.get(id=user.id)
+        except Exception as e:
+            return False, "Oops! This feature is only available for admins"
+        
+        reference = validated_data.get('reference')
+
+        draft = next( (d for d in blog.drafts if d.get('reference').lower() == reference.lower() ), None )
+        if draft is None:
+            return False, "Oops! draft with this reference not found"
+        
+        blog.content = draft.get('content')
+        time_now = timezone.now()
+        draft['published_at'] = str(time_now)
+        draft['published_by'] = user.user_name
+        blog.published_at = str(time_now)
+        blog.is_published=True
+        blog.save()
+
+        return True, ReadBlogPostSerializer(blog).data
+
+
+
+
