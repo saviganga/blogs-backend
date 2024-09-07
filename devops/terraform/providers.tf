@@ -10,7 +10,7 @@ terraform {
   }
 
 #   backend "s3" {
-#     bucket         = "power-labs-sensor-data-backend"
+#     bucket         = "blogs-backend"
 #     key            = "terraform.tfstate"
 #     region         = "us-east-1"
 #   }

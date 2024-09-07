@@ -1,0 +1,61 @@
+---
+- name: Update ECS Task Definition with new Docker image
+  hosts: localhost
+  become: false
+  tasks:
+    - name: Get existing task definition
+      community.aws.ecs_taskdefinition_info:
+        task_definition: '{{ task_definition_family }}'
+        region: '{{ region }}'
+      register: current_task_definition
+
+    - name: Set new image URI
+      set_fact:
+        new_image_uri: '{{ new_image_uri }}'
+
+    # - name: Debug task definition content
+    #   debug:
+    #     msg: "{{ current_task_definition }}"
+
+    - name: Register new task definition
+      community.aws.ecs_taskdefinition:
+        region: '{{ region }}'
+        execution_role_arn: '{{ execution_role_arn }}'
+        family: 'blogs-family'
+        network_mode: 'awsvpc'
+        launch_type: FARGATE
+        cpu: '1024'
+        memory: '2048'
+        containers:
+          - name: '{{ current_task_definition.container_definitions[0].name }}'
+            image: '{{ new_image_uri }}'
+            cpu: 1024
+            memory: 2048
+            essential: '{{ current_task_definition.container_definitions[0].essential }}'
+            environment: '{{ current_task_definition.container_definitions[0].environment }}'
+            logConfiguration:
+              logDriver: awslogs
+              options:
+                awslogs-create-group: 'true' 
+                awslogs-group: /ecs/blogs
+                awslogs-region: us-east-1 
+                awslogs-stream-prefix: ecs
+            portMappings:
+              - containerPort: '{{ current_task_definition.container_definitions[0].port_mappings[0].container_port }}'
+                hostPort: '{{ current_task_definition.container_definitions[0].port_mappings[0].host_port }}'
+
+            
+        state: present
+      register: new_task_definition
+
+    # - name: Debug task definition content
+    #   debug:
+    #     msg: "{{ new_task_definition }}"
+
+    - name: Update ECS service
+      community.aws.ecs_service:
+        region: '{{ region }}'
+        cluster: '{{ cluster }}'
+        service: '{{ cluster_service }}'
+        task_definition: "{{ new_task_definition.taskdefinition.taskDefinitionArn }}"
+        state: present
