@@ -36,7 +36,7 @@ docker-compose build
 
 4. Test connectivity by making a GET request on postman on this endpont `http://127.0.0.1:8000/sensors/sensor-data/health/' or running this command in a new terminal
 ```bash
-curl http://127.0.0.1:8000/sensors/sensor-data/health/
+curl http://127.0.0.1:8000/blog/posts/health/
 
 # response
 {"status":"SUCCESS","message":"Success"}
