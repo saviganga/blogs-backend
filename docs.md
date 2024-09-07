@@ -85,7 +85,7 @@ This endpoint allows users to login to their accounts.
 ```
 
 
-#### 5. Get user data
+#### 5. Get admin data
 This endpoint allows users to view their staff account information.
 
 - **Endpoint**: `{{BASE_URL}}/users/admins/`
