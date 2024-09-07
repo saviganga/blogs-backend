@@ -13,9 +13,9 @@
       set_fact:
         new_image_uri: '{{ new_image_uri }}'
 
-    # - name: Debug task definition content
-    #   debug:
-    #     msg: "{{ current_task_definition }}"
+    - name: Debug task definition content
+      debug:
+        msg: "{{ current_task_definition }}"
 
     - name: Register new task definition
       community.aws.ecs_taskdefinition:
@@ -48,9 +48,9 @@
         state: present
       register: new_task_definition
 
-    # - name: Debug task definition content
-    #   debug:
-    #     msg: "{{ new_task_definition }}"
+    - name: Debug task definition content
+      debug:
+        msg: "{{ new_task_definition }}"
 
     - name: Update ECS service
       community.aws.ecs_service:
