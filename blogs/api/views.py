@@ -87,6 +87,7 @@ class BlogPostViewSet(ModelViewSet):
                     status=status.HTTP_200_OK,
                 )
         except Exception as e:
+            print(e)
             return Response(
                 data=u_responses.user_error_response(message="Unable to fetch blog posts"),
                 status=status.HTTP_400_BAD_REQUEST,
@@ -197,6 +198,15 @@ class BlogPostViewSet(ModelViewSet):
             },
             status=status.HTTP_400_BAD_REQUEST
         )
+    
+    @action(methods=["get"], detail=False, permission_classes=[permissions.AllowAny])
+    def health(self, request, pk=None):
+
+        return Response(
+                    data=u_responses.user_success_response(),
+                    status=status.HTTP_200_OK,
+                )
+
         
 
 
