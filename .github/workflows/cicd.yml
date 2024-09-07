@@ -65,7 +65,7 @@ jobs:
 
       - name: Update ECS Task Definition with Ansible
         run: |
-          ansible-playbook -i ./devops/ansible/inventory, -c local ./devops/ansible/playbooks/update_ecs_task.yaml --extra-vars "new_image_uri=${{ secrets.DOCKER_HUB_REPO }}:${{ env.LATEST_TAG }} execution_role_arn=${{ secrets.EXECUTION_ROLE_ARN }} task_definition_family=${{ secrets.TASK_DEFINITION_FAMILY }} docker_hub_repo=${{ secrets.DOCKER_HUB_REPO }} container_name=${{ secrets.CONTAINER_NAME }} cluster=${{ secrets.CLUSTER }} cluster_service=${{ secrets.CLUSTER_SERVICE }} region=${{ secrets.REGION }}"
+          ansible-playbook -i ./devops/ansible/inventory, -c local ./devops/ansible/playbooks/update_ecs_task.yml --extra-vars "new_image_uri=${{ secrets.DOCKER_HUB_REPO }}:${{ env.LATEST_TAG }} execution_role_arn=${{ secrets.EXECUTION_ROLE_ARN }} task_definition_family=${{ secrets.TASK_DEFINITION_FAMILY }} docker_hub_repo=${{ secrets.DOCKER_HUB_REPO }} container_name=${{ secrets.CONTAINER_NAME }} cluster=${{ secrets.CLUSTER }} cluster_service=${{ secrets.CLUSTER_SERVICE }} region=${{ secrets.REGION }}"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
