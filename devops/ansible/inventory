@@ -1,0 +1,10 @@
+[local]
+localhost ansible_connection=local
+
+[local:vars]
+task_definition_family=blogs-family
+docker_hub_repo=saviganga/blogs
+container_name=blogs-api
+cluster=blogs-ecs-cluster
+cluster_service=blogs-ecs-service
+
