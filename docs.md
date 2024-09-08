@@ -3,7 +3,7 @@
 
 ## APIs Overview
 
-- **Base Url**: `127.0.0.1:8000`
+- **Base Url**: `blogs-lb-2023728377.us-east-1.elb.amazonaws.com:8000`
 
 ### Authentication
 The application uses JWT Authentication for secure access to specific endpoints
@@ -228,3 +228,38 @@ This endpoint allows authors update the a blog post.
     "Authorization": "JWT {{jwt_token}}"
 }
 ```
+
+
+# Infrastructure and Deployment
+
+## Cloud Infrastructure
+
+The cloud infrastructure for this service is hosted on AWS. Key components include:
+
+- **Containerization**: The application is containerized and runs on AWS Elastic Container Service (ECS) with Fargate. This setup reduces costs associated with virtual machine resource management.
+- **Load Balancer**: The ECS cluster is positioned behind an Application Load Balancer (ALB), which restricts access to traffic from the load balancer only, blocking direct public internet access.
+
+## Infrastructure as Code
+
+Terraform is utilized for defining and managing the infrastructure on AWS. The configuration files are located in `./devops/terraform/`:
+
+- **`providers.tf`**: Declares the Terraform providers and defines the backend (AWS S3) for storing the Terraform state.
+- **`vars.tf`**: Contains variables used in the Terraform configuration.
+- **`security_groups.tf`**: Configures ingress and egress rules for the resources.
+- **`alb.tf`**: Provisions the Application Load Balancer, including its target group and listener.
+- **`db.tf`**: Sets up the database configuration.
+- **`ecs.tf`**: Manages the ECS infrastructure, including the cluster, service, and task definitions.
+- **`iam.tf`**: Defines IAM roles and policies for the cloud infrastructure.
+- **`vpc.tf`**: Configures and retrieves VPC information.
+
+## Configuration Management
+
+Ansible is used for configuring the application on the provisioned infrastructure. The Ansible script runs from the CI/CD pipeline, ensuring the application is updated with the latest image on every push to the branch.
+
+- **`./devops/ansible/playbooks/update_ecs_task.yaml`**: Updates the AWS ECS task definition and service with the latest application image.
+
+## CI/CD Pipeline
+
+The CI/CD pipeline is built using GitHub Actions.
+
+This setup ensures that application updates are managed efficiently and deployed automatically based on branch activity.
