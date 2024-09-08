@@ -71,7 +71,7 @@ class BlogPostViewSet(ModelViewSet):
     def list(self, request, *args, **kwargs):
 
         try:
-            queryset = self.filter_queryset(self.get_queryset())
+            queryset = self.filter_queryset(self.get_queryset().filter(is_published=True))
             page = self.paginate_queryset(queryset)
             if page is not None:
                 serializer = self.serializer_class(queryset, many=True)
@@ -195,8 +195,37 @@ class BlogPostViewSet(ModelViewSet):
                 "message": "success",
                 "data": published_draft
             },
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_200_OK
         )
+    
+    @action(methods=["get"], detail=False)
+    def unpublished(self, request, *args, **kwargs):
+
+        try:
+            if (request.headers.get('entity', None) is not None) and (request.headers.get('entity').lower() == 'admin'):
+                queryset = self.filter_queryset(self.get_queryset())
+            else:
+                queryset = self.filter_queryset(self.get_queryset().filter(is_published=False, author__id=request.user.id))
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.serializer_class(queryset, many=True)
+                return self.get_paginated_response(serializer.data)
+            serializer = self.serializer_class(queryset, many=True)
+            success_response = {
+                "message": "Successfully fetched blog posts",
+                "data": serializer.data
+            }
+            
+            return Response(
+                    data=u_responses.user_success_response(data=success_response),
+                    status=status.HTTP_200_OK,
+                )
+        except Exception as e:
+            return Response(
+                data=u_responses.user_error_response(message="Unable to fetch blog posts"),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
     
     @action(methods=["get"], detail=False, permission_classes=[permissions.AllowAny])
     def health(self, request, pk=None):
