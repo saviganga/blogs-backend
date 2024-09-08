@@ -81,3 +81,26 @@ class PublishBlogPostSerializer(serializers.Serializer):
 
 
 
+
+
+class UpdateBlogPostSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = api_models.BlogPost
+        fields = ["content"]
+
+    def update(self, validated_data, blog):
+
+        blog_drafts = blog.drafts
+        new_draft = {
+            "reference": api_utils.create_draft_reference(),
+            "title": blog.title,
+            "content": validated_data.get('content'),
+            "created_at": str(timezone.now()),
+            "published_at": "",
+            "published_by": ""
+        }
+        blog_drafts.insert(0, new_draft)
+        blog.drafts = blog_drafts
+        blog.save()
+        return True, ReadBlogPostSerializer(blog).data

@@ -92,6 +92,65 @@ class BlogPostViewSet(ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+    def update(self, request, *args, **kwargs):
+
+        try:
+            partial = kwargs.pop("partial", False)
+            instance = self.get_object()
+        except Exception as get_instance_error:
+           return Response(
+                data={
+                    "status": "FAILED",
+                    "message": "Unable to get blog post"
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if request.user != instance.author:
+            return Response(
+                data={
+                    "status": "FAILED",
+                    "message": "Oops! This feature is only for blog authors"
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        
+        serializer = api_serializers.UpdateBlogPostSerializer(instance, data=request.data, partial=partial)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as validate_serializer_error:
+            return Response(
+                data={
+                    "status": "FAILED",
+                    "message": "Unable to get blog post",
+                    "data": serializer.errors
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        is_updated, updated_blog = serializer.update(validated_data=serializer.validated_data, blog=instance)
+        if not is_updated:
+            return Response(
+                data={
+                    "status": "FAILED",
+                    "message": "Unable to update blog post"
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+        return Response(
+            data={
+                "status": "SUCCESS",
+                "message": "Successfully updated user profile",
+                "data": updated_blog
+            },
+            status=status.HTTP_200_OK
+        )
+    
+
     def retrieve(self, request, *args, **kwargs):
 
         try:

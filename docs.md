@@ -205,3 +205,26 @@ This endpoint allows admins to approve blog post drafts for publishing. Every dr
     "Authorization": "JWT {{jwt_token}}"
 }
 ```
+
+
+#### 12. Update blog Post
+This endpoint allows authors update the a blog post.
+
+- **Endpoint**: `{{BASE_URL}}/blog/posts/<blogpost_id>/`
+- **Method**: PATCH
+- **Authorization**: True
+
+
+**Request Body:**
+```json
+{
+    "content": "For every action, there is an equal and opposite reaction"
+}
+```
+
+**Request Headers:**
+```json
+{
+    "Authorization": "JWT {{jwt_token}}"
+}
+```
